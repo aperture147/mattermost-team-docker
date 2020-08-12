@@ -1,8 +1,8 @@
-FROM alpine:3.10
+FROM alpine:3.12
 
 # Some ENV variables
 ENV PATH="/mattermost/bin:${PATH}"
-ENV MM_VERSION=5.20.1
+ENV MM_VERSION=5.25.2
 
 # Build argument to set Mattermost edition
 ARG edition=team
@@ -38,13 +38,13 @@ RUN mkdir -p /mattermost/data /mattermost/plugins /mattermost/client/plugins \
     && chown -R mattermost:mattermost /mattermost /config.json.save /mattermost/plugins /mattermost/client/plugins \
     && setcap cap_net_bind_service=+ep /mattermost/bin/mattermost
 
-COPY entrypoint.sh /
-RUN chmod +x /entrypoint.sh
-
 USER mattermost
 
 #Healthcheck to make sure container is ready
 HEALTHCHECK CMD curl --fail http://localhost:8000 || exit 1
+
+COPY entrypoint.sh /
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 WORKDIR /mattermost
